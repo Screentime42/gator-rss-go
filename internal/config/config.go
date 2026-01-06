@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	URL 					string `json:"db_url"`
-	CurrentUserName 	string `json:"current_user_name"`
+	DBURL 					string `json:"db_url"`
+	CurrentUserName 		string `json:"current_user_name"`
 }
 
 func (c *Config) SetUser(username string) error {
