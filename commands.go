@@ -36,7 +36,7 @@ func (c *commands) register(name string, f func(*state, command) error) {
 	c.cmd[name] = f
 }
 
-
+// handlers hooked up to SQL queries
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("no username input")
@@ -122,5 +122,17 @@ func handlerGetUsers(s *state, cmd command) error {
 			fmt.Printf("* %s\n", user.Name)
 	}
 	}
+	return nil
+}
+
+func handlerAgg(s *state, cmd command) error {
+	_ = cmd // use later
+
+	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%+v\n", feed)
 	return nil
 }
