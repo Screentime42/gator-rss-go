@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/google/uuid"
+	"strings"
 )
 
 type command struct {
@@ -160,5 +161,23 @@ func handlerAddFeed(s *state, cmd command) error {
 	}
 
 	fmt.Println("Created feed:", feed.Name)
+	return nil
+}
+
+func handlerViewFeeds(s *state, cmd command) error {
+	feeds, err := s.db.GetUserFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("Failed to get feeds list: %w", err)
+	}
+
+	//Table header
+	fmt.Printf("%-25s %-40s %-20s\n", "Feed Name", "URL", "User") 
+	fmt.Printf("%s\n", strings.Repeat("-", 90)) 
+	
+	//Table rows
+	for _, f := range feeds { 
+		fmt.Printf("%-25s %-40s %-20s\n", f.FeedName, f.FeedUrl, f.UserName) 
+	}
+
 	return nil
 }

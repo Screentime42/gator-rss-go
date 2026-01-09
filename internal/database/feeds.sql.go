@@ -90,22 +90,40 @@ func (q *Queries) GetFeeds(ctx context.Context) ([]Feed, error) {
 	return items, nil
 }
 
-const getUserFeeds = `-- name: GetUserFeeds :one
-SELECT id, created_at, updated_at, name, url, user_id
-FROM feeds
-WHERE user_id = $1
+const getUserFeeds = `-- name: GetUserFeeds :many
+SELECT 
+    f.name AS feed_name, 
+    f.url AS feed_url, 
+    u.name AS user_name
+FROM feeds f
+JOIN users u ON f.user_id = u.id
 `
 
-func (q *Queries) GetUserFeeds(ctx context.Context, userID uuid.UUID) (Feed, error) {
-	row := q.db.QueryRowContext(ctx, getUserFeeds, userID)
-	var i Feed
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Name,
-		&i.Url,
-		&i.UserID,
-	)
-	return i, err
+type GetUserFeedsRow struct {
+	FeedName string
+	FeedUrl  string
+	UserName string
+}
+
+func (q *Queries) GetUserFeeds(ctx context.Context) ([]GetUserFeedsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserFeeds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserFeedsRow
+	for rows.Next() {
+		var i GetUserFeedsRow
+		if err := rows.Scan(&i.FeedName, &i.FeedUrl, &i.UserName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

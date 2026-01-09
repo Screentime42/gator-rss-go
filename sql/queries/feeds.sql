@@ -11,10 +11,13 @@ VALUES (
 RETURNING *;
 
 
--- name: GetUserFeeds :one
-SELECT *
-FROM feeds
-WHERE user_id = $1;
+-- name: GetUserFeeds :many
+SELECT 
+    f.name AS feed_name, 
+    f.url AS feed_url, 
+    u.name AS user_name
+FROM feeds f
+JOIN users u ON f.user_id = u.id;
 
 
 -- name: GetFeeds :many
