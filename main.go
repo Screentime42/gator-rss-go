@@ -16,6 +16,7 @@ type state struct {
 }
 
 func main() {
+	// Read config
 	cfg, err := config.Read()
 	if err != nil {
 		log.Fatal(err)
@@ -31,7 +32,7 @@ func main() {
 
 	programState := &state{
 		db:	dbQueries,
-		cfg:	cfg,
+		cfg:	&cfg,
 	}
 
 
