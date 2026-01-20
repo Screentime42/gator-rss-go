@@ -216,3 +216,26 @@ func handlerFollow(s *state, cmd command) error {
 	fmt.Printf("You (%s) are now following %s\n", follow.UserName, follow.FeedName)
 	return nil
 }
+
+
+func handlerFollowing(s *state, cmd command) error {
+	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return fmt.Errorf("Failed to get current user id: %w", err)
+	}
+
+	feeds, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
+	if err != nil {
+		return fmt.Errorf("Failed to get followed feeds list: %w", err)
+	}
+
+	//Table header
+	fmt.Printf("%-25s %-40s %-20s\n", "Feed Name", "URL", "User") 
+	fmt.Printf("%s\n", strings.Repeat("-", 90)) 
+	
+	//Table rows
+	for _, f := range feeds { 
+		fmt.Printf("%-25s %-40s %-20s\n", f.FeedName, f.FeedUrl, f.UserName) 
+	}
+	return nil
+}

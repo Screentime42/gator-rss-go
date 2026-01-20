@@ -24,3 +24,14 @@ JOIN feeds ON feeds.id = inserted_feed_follow.feed_id;
 -- name: GetFeedByURL :one
 SELECT * FROM feeds
 WHERE url = $1;
+
+
+-- name: GetFeedFollowsForUser :many
+SELECT 
+   f.name AS feed_name, 
+   f.url AS feed_url, 
+   u.name AS user_name   
+FROM feed_follows ff
+JOIN users u ON u.id = ff.user_id
+JOIN feeds f ON f.id = ff.feed_id
+WHERE ff.user_id = $1;
