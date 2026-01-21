@@ -126,6 +126,7 @@ func handlerGetUsers(s *state, cmd command) error {
 	return nil
 }
 
+
 func handlerAgg(s *state, cmd command) error {
 	_ = cmd // use later
 
@@ -138,12 +139,10 @@ func handlerAgg(s *state, cmd command) error {
 	return nil
 }
 
-func handlerAddFeed(s *state, cmd command) error {
+
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	name, url := cmd.Args[0], cmd.Args[1]
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Failed to get user: %w", err)
-	}
+	
 
 	params := database.CreateFeedParams{
 		ID:			uuid.New(),
@@ -193,17 +192,12 @@ func handlerViewFeeds(s *state, cmd command) error {
 }
 
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("incorrect usage - usage: follow <feed-url>")
 	}
 
 	feedURL := cmd.Args[0]
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
-	}
 
 	feed, err := s.db.GetFeedByURL(context.Background(), feedURL)
 	if err != nil {
@@ -229,11 +223,7 @@ func handlerFollow(s *state, cmd command) error {
 }
 
 
-func handlerFollowing(s *state, cmd command) error {
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Failed to get current user id: %w", err)
-	}
+func handlerFollowing(s *state, cmd command, user database.User) error {
 
 	feeds, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
