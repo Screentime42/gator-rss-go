@@ -240,3 +240,26 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 	}
 	return nil
 }
+
+
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("invalid usage - usage: unfollow <feed-url>")
+	}
+	feedURL := cmd.Args[0]
+
+	feed, err := s.db.GetFeedByURL(context.Background(), feedURL)
+	if err != nil {
+		return fmt.Errorf("failed to get feed: %w", err)
+	}
+
+	params := database.UnfollowParams {
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+
+	if err := s.db.Unfollow(context.Background(), params); err != nil {
+		return fmt.Errorf("unable to unfollow: %w", err)
+	}
+	return nil
+}
