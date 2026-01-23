@@ -181,6 +181,7 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	return nil
 }
 
+
 func handlerViewFeeds(s *state, cmd command) error {
 	feeds, err := s.db.GetUserFeeds(context.Background())
 	if err != nil {
@@ -272,7 +273,7 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 }
 
 
-func handlerBrowse(s *state, cmd command) error {
+func handlerBrowse(s *state, cmd command, user database.User) error {
 	// Get current user
 	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
 	if err != nil {
@@ -282,7 +283,7 @@ func handlerBrowse(s *state, cmd command) error {
 	// Limit defined with default being 2
 	limit := 2
 	if len(cmd.Args) > 0 {
-		n, err := strconv.Atoi(args[0])
+		n, err := strconv.Atoi(cmd.Args[0])
 		if err != nil {
 			return fmt.Errorf("invalid limit: %w", err)
 		}
