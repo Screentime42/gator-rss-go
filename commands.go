@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 	"time"
+	"strconv"
 
 	"github.com/Screentime42/gator-go/internal/database"
 )
@@ -269,3 +270,48 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 	}
 	return nil
 }
+
+
+func handlerBrowse(s *state, cmd command) error {
+	// Get current user
+	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return fmt.Errorf("failed to load current user: %w", err)
+	}
+
+	// Limit defined with default being 2
+	limit := 2
+	if len(cmd.Args) > 0 {
+		n, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid limit: %w", err)
+		}
+		limit = n
+	}
+
+	// Query posts for the user
+	posts, err := s.db.GetPostsForUser(context.Background(), database.GetPostsForUserParams{
+		UserID:	user.ID,
+		Limit:	int32(limit),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to fetch posts: %w", err)
+	}
+
+	// Print posts
+	// Table header 
+	fmt.Printf("%-30s %-50s %-25s\n", "Title", "URL", "Published") 
+	fmt.Printf("%s\n", strings.Repeat("-", 110)) 
+	
+	// Table rows 
+	for _, p := range posts {
+		fmt.Printf( "%-30s %-50s %-25s\n", 
+		p.Title, p.Url, 
+		p.PublishedAt.Format("2006-01-02 15:04"), 
+		) 
+	}
+
+	return nil
+}
+
+
