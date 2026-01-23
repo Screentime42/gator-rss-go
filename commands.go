@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Screentime42/gator-go/internal/database"
-	"github.com/google/uuid"
 )
 
 type command struct {
@@ -80,7 +79,6 @@ func handlerRegister(s *state, cmd command) error {
 	}
 
 	params := database.CreateUserParams{
-		ID:			uuid.New(),
 		CreatedAt:	time.Now().UTC(),
 		UpdatedAt:	time.Now().UTC(),
 		Name:		 	cmd.Args[0],
@@ -156,7 +154,6 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	
 
 	params := database.CreateFeedParams{
-		ID:			uuid.New(),
 		CreatedAt:	time.Now().UTC(),
 		UpdatedAt:	time.Now().UTC(),
 		Name:			name,
@@ -170,7 +167,6 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	}
 
 	_, err = s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
-		ID:			uuid.New(),
 		CreatedAt:	time.Now().UTC(),
 		UpdatedAt:	time.Now().UTC(),
 		UserID: user.ID,
@@ -216,7 +212,6 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	}
 
 	params := database.CreateFeedFollowParams{
-		ID:			uuid.New(),
 		CreatedAt:	time.Now().UTC(),
 		UpdatedAt:	time.Now().UTC(),
 		UserID:		user.ID,
