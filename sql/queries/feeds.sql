@@ -1,12 +1,11 @@
 -- name: CreateFeed :one
-INSERT INTO feeds (id, created_at, updated_at, name, url, user_id)
+INSERT INTO feeds (created_at, updated_at, name, url, user_id)
 VALUES (
     $1,
     $2,
     $3,
     $4,
-    $5,
-    $6
+    $5
 )
 RETURNING *;
 
@@ -31,7 +30,7 @@ SET last_fetched_at = NOW(),
     updated_at = NOW()
 WHERE id = $1;
 
-C
+
 -- name: GetNextFeedToFetch :one
 SELECT *
 FROM feeds
