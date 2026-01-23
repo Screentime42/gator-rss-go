@@ -7,7 +7,7 @@ import (
 	"github.com/Screentime42/gator-go/internal/database"
 )
 
-func ScrapeFeeds(ctx context.Context, q *database.Queries) error {
+func scrapeFeeds(ctx context.Context, q *database.Queries) error {
 	nextFeed, err := q.GetNextFeedToFetch(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get next feed: %w", err)

@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/Screentime42/gator-go/internal/database"
 	"fmt"
-	"time"
-	"github.com/google/uuid"
+	"log"
 	"strings"
+	"time"
+
+	"github.com/Screentime42/gator-go/internal/database"
+	"github.com/google/uuid"
 )
 
 type command struct {
@@ -128,15 +130,24 @@ func handlerGetUsers(s *state, cmd command) error {
 
 
 func handlerAgg(s *state, cmd command) error {
-	_ = cmd // use later
+	if len(cmd.Args) != 1 {
+        return fmt.Errorf("incorrect usage - usage: agg <time_between_reqs>")
+    }
 
-	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
-	if err != nil {
-		return err
+	timeBetweenRequests, err := time.ParseDuration(cmd.Args[0])
+    if err != nil {
+        return fmt.Errorf("invalid duration: %w", err)
+    }
+
+	 log.Printf("Collecting feeds every %s", timeBetweenRequests)
+	
+	ticker := time.NewTicker(timeBetweenRequests)
+
+	for ; ; <-ticker.C {
+		if err := scrapeFeeds(context.Background(), s.db); err != nil {
+			log.Println("error scraping feeds:", err)
+		}
 	}
-
-	fmt.Printf("%+v\n", feed)
-	return nil
 }
 
 
