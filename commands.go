@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
 	"github.com/Screentime42/gator-go/internal/database"
 )
@@ -209,6 +209,7 @@ func handlerFollow(s *state, cmd command, user database.User) error {
 	feedURL := cmd.Args[0]
 
 	feed, err := s.db.GetFeedByURL(context.Background(), feedURL)
+
 	if err != nil {
 		return fmt.Errorf("failed to get feed: %w", err)
 	}
